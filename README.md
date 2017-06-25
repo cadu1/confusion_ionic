@@ -12,7 +12,7 @@ AngularJs v1
 You need install a JSON-SERVER, is a small server that provide the json objects and some contents.
 
 ``In terminal to install
-npm install json-server -g
+npm install -g json-server
 ``
 
 ``in terminal to run
