@@ -1,15 +1,37 @@
 angular.module('conFusion.controllers', [])
 
   .controller('AppCtrl', function ($scope, $ionicModal, $timeout) {
-    // With the new view caching in Ionic, Controllers are only called
-    // when they are recreated or on app start, instead of every page change.
-    // To listen for when this page is active (for example, to refresh data),
-    // listen for the $ionicView.enter event:
-    //$scope.$on('$ionicView.enter', function(e) {
-    //});
-
     // Form data for the login modal
     $scope.loginData = {};
+    $scope.reservation = {};
+
+    // Create the reserve modal that we will use later
+    $ionicModal.fromTemplateUrl('templates/reserve.html', {
+      scope: $scope
+    }).then(function (modal) {
+      $scope.reserveform = modal;
+    });
+
+    // Triggered in the reserve modal to close it
+    $scope.closeReserve = function () {
+      $scope.reserveform.hide();
+    };
+
+    // Open the reserve modal
+    $scope.reserve = function () {
+      $scope.reserveform.show();
+    };
+
+    // Perform the reserve action when the user submits the reserve form
+    $scope.doReserve = function () {
+      console.log('Doing reservation', $scope.reservation);
+
+      // Simulate a reservation delay. Remove this and replace with your reservation
+      // code if using a server system
+      $timeout(function () {
+        $scope.closeReserve();
+      }, 1000);
+    };
 
     // Create the login modal that we will use later
     $ionicModal.fromTemplateUrl('templates/login.html', {
