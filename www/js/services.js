@@ -17,9 +17,7 @@ angular.module('conFusion.services', ['ngResource'])
         ];
 
         this.getDishes = function () {
-
             return $resource(baseURL + "dishes/:id", null, { 'update': { method: 'PUT' } });
-
         };
 
         // implement a function named getPromotion
@@ -27,20 +25,27 @@ angular.module('conFusion.services', ['ngResource'])
         this.getPromotion = function () {
             return $resource(baseURL + "promotions/:id");;
         }
-
-
     }])
 
     .factory('corporateFactory', ['$resource', 'baseURL', function ($resource, baseURL) {
-
-
         return $resource(baseURL + "leadership/:id");
+    }])
 
+    .factory('favoriteFactory', ['$resource', 'baseURL', function ($resource, baseURL) {
+        let favFac = {};
+        let favorites = [];
+
+        favFac.addToFavorites = function (index) {
+            for (let i = 0; i < favorites.length; i++) {
+                if (favorites[i].id == index)
+                    return;
+            }
+            favorites.push({ id: index });
+        };
+
+        return favFac;
     }])
 
     .factory('feedbackFactory', ['$resource', 'baseURL', function ($resource, baseURL) {
-
-
         return $resource(baseURL + "feedback/:id");
-
     }]);
