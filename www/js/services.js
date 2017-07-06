@@ -2,19 +2,8 @@
 
 angular.module('conFusion.services', ['ngResource'])
     .constant("baseURL", "http://localhost:3000/")
+
     .service('menuFactory', ['$resource', 'baseURL', function ($resource, baseURL) {
-
-        var promotions = [
-            {
-                _id: 0,
-                name: 'Weekend Grand Buffet',
-                image: 'images/buffet.png',
-                label: 'New',
-                price: '19.99',
-                description: 'Featuring mouthwatering combinations with a choice of five different salads, six enticing appetizers, six main entrees and five choicest desserts. Free flowing bubbly and soft drinks. All for just $19.99 per person ',
-            }
-
-        ];
 
         this.getDishes = function () {
             return $resource(baseURL + "dishes/:id", null, { 'update': { method: 'PUT' } });
@@ -32,13 +21,14 @@ angular.module('conFusion.services', ['ngResource'])
     }])
 
     .factory('favoriteFactory', ['$resource', 'baseURL', function ($resource, baseURL) {
-        let favFac = {};
-        let favorites = [];
+        var favFac = {};
+        var favorites = [];
 
         favFac.addToFavorites = function (index) {
             for (let i = 0; i < favorites.length; i++) {
-                if (favorites[i].id == index)
+                if (favorites[i].id == index) {
                     return;
+                }
             }
             favorites.push({ id: index });
         };
