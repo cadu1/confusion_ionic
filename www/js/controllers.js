@@ -1,9 +1,10 @@
 angular.module('conFusion.controllers', [])
 
-  .controller('AppCtrl', function ($scope, $ionicModal, $timeout) {
+  .controller('AppCtrl', function ($scope, $ionicModal, $timeout, $localStorage) {
     // Form data for the login modal
     $scope.loginData = {};
     $scope.reservation = {};
+    $scope.loginData = $localStorage.getObject('userinfo', '{}');
 
     // Create the reserve modal that we will use later
     $ionicModal.fromTemplateUrl('templates/reserve.html', {
@@ -53,6 +54,8 @@ angular.module('conFusion.controllers', [])
     // Perform the login action when the user submits the login form
     $scope.doLogin = function () {
       console.log('Doing login', $scope.loginData);
+
+      $localStorage.storeObject('userinfo', $scope.loginData);
 
       // Simulate a login delay. Remove this and replace with your login
       // code if using a login system
