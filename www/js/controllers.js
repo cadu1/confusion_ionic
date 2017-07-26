@@ -2,9 +2,9 @@ angular.module('conFusion.controllers', [])
 
   .controller('AppCtrl', function ($scope, $ionicModal, $timeout, $localStorage) {
     // Form data for the login modal
-    $scope.loginData = {};
     $scope.reservation = {};
     $scope.loginData = $localStorage.getObject('userinfo', '{}');
+    $scope.favorites = $localStorage.getObject('favorites', '[]');
 
     // Create the reserve modal that we will use later
     $ionicModal.fromTemplateUrl('templates/reserve.html', {
@@ -65,7 +65,7 @@ angular.module('conFusion.controllers', [])
     };
   })
 
-  .controller('MenuController', ['$scope', 'menuFactory', 'favoriteFactory', 'baseURL', '$ionicListDelegate', function ($scope, menuFactory, favoriteFactory, baseURL, $ionicListDelegate) {
+  .controller('MenuController', ['$scope', 'menuFactory', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$localStorage', function ($scope, menuFactory, favoriteFactory, baseURL, $ionicListDelegate, $localStorage) {
 
     $scope.baseURL = baseURL;
     $scope.tab = 1;
@@ -78,6 +78,15 @@ angular.module('conFusion.controllers', [])
       console.log("index is " + index);
       favoriteFactory.addToFavorites(index);
       $ionicListDelegate.closeOptionButtons();
+
+      angular.forEach($scope.favorites, function (val, key) {
+        if (val.id == index) {
+          $scope.favorites.splice(key, 1);
+        }
+      });
+
+      $scope.favorites.push({ id: index });
+      $localStorage.storeObject('favorites', $scope.favorites);
     }
 
     menuFactory.query(
@@ -112,7 +121,7 @@ angular.module('conFusion.controllers', [])
     };
   }])
 
-  .controller('FavoritesController', ['$scope', 'dishes', 'favorites', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPopup', '$ionicLoading', '$timeout', function ($scope, dishes, favorites, favoriteFactory, baseURL, $ionicListDelegate, $ionicPopup, $ionicLoading, $timeout) {
+  .controller('FavoritesController', ['$scope', 'dishes', 'favorites', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPopup', '$ionicLoading', '$timeout', '$localStorage', function ($scope, dishes, favorites, favoriteFactory, baseURL, $ionicListDelegate, $ionicPopup, $ionicLoading, $timeout, $localStorage) {
 
     $scope.baseURL = baseURL;
     $scope.shouldShowDelete = false;
@@ -137,6 +146,15 @@ angular.module('conFusion.controllers', [])
         if (res) {
           console.log('Ok to delete');
           favoriteFactory.deleteFromFavorites(index);
+
+          angular.forEach($scope.favorites, function (val, key) {
+            if (val.id == index) {
+              $scope.favorites.splice(key, 1);
+            }
+          });
+
+          $localStorage.storeObject('favorites', $scope.favorites);
+
         } else {
           console.log('Canceled delete');
         }
@@ -245,17 +263,15 @@ angular.module('conFusion.controllers', [])
     }
   }])
 
-  .controller('IndexController', ['$scope', 'menuFactory', 'promotionFactory', 'corporateFactory', 'baseURL', function ($scope, menuFactory, promotionFactory, corporateFactory, baseURL) {
+  .controller('IndexController', ['$scope', 'dish', 'promotion', 'leader', 'baseURL', function ($scope, dish, promotion, leader, baseURL) {
 
     $scope.baseURL = baseURL;
-    $scope.leader = corporateFactory.get({
-      id: 3
-    });
+    $scope.leader = leader;
 
     $scope.showDish = false;
     $scope.message = "Loading ...";
 
-    $scope.dish = menuFactory.get({ id: 0 }).$promise.then(
+    $scope.dish = dish.$promise.then(
       function (response) {
         $scope.dish = response;
         $scope.showDish = true;
@@ -264,16 +280,14 @@ angular.module('conFusion.controllers', [])
         $scope.message = "Error: " + response.status + " " + response.statusText;
       });
 
-    $scope.promotion = promotionFactory.get({
-      id: 0
-    });
+    $scope.promotion = promotion;
 
   }])
 
-  .controller('AboutController', ['$scope', 'corporateFactory', 'baseURL', function ($scope, corporateFactory, baseURL) {
+  .controller('AboutController', ['$scope', 'leaders', 'baseURL', function ($scope, leaders, baseURL) {
 
     $scope.baseURL = baseURL;
-    $scope.leaders = corporateFactory.query();
+    $scope.leaders = leaders;
 
   }])
 
