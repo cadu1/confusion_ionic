@@ -4,7 +4,6 @@ angular.module('conFusion.controllers', [])
     // Form data for the login modal
     $scope.reservation = {};
     $scope.loginData = $localStorage.getObject('userinfo', '{}');
-    $scope.favorites = $localStorage.getObject('favorites', '[]');
 
     // Create the reserve modal that we will use later
     $ionicModal.fromTemplateUrl('templates/reserve.html', {
@@ -65,7 +64,7 @@ angular.module('conFusion.controllers', [])
     };
   })
 
-  .controller('MenuController', ['$scope', 'menuFactory', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$localStorage', function ($scope, menuFactory, favoriteFactory, baseURL, $ionicListDelegate, $localStorage) {
+  .controller('MenuController', ['$scope', 'dishes', 'favoriteFactory', 'baseURL', '$ionicListDelegate', 'menuFactory', function ($scope, dishes, favoriteFactory, baseURL, $ionicListDelegate, menuFactory) {
 
     $scope.baseURL = baseURL;
     $scope.tab = 1;
@@ -74,29 +73,13 @@ angular.module('conFusion.controllers', [])
     $scope.showMenu = false;
     $scope.message = "Loading ...";
 
+    $scope.dishes = dishes;
+
     $scope.addFavorite = function (index) {
       console.log("index is " + index);
       favoriteFactory.addToFavorites(index);
       $ionicListDelegate.closeOptionButtons();
-
-      angular.forEach($scope.favorites, function (val, key) {
-        if (val.id == index) {
-          $scope.favorites.splice(key, 1);
-        }
-      });
-
-      $scope.favorites.push({ id: index });
-      $localStorage.storeObject('favorites', $scope.favorites);
     }
-
-    menuFactory.query(
-      function (response) {
-        $scope.dishes = response;
-        $scope.showMenu = true;
-      },
-      function (response) {
-        $scope.message = "Error: " + response.status + " " + response.statusText;
-      });
 
     $scope.select = function (setTab) {
       $scope.tab = setTab;
@@ -121,7 +104,7 @@ angular.module('conFusion.controllers', [])
     };
   }])
 
-  .controller('FavoritesController', ['$scope', 'dishes', 'favorites', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPopup', '$ionicLoading', '$timeout', '$localStorage', function ($scope, dishes, favorites, favoriteFactory, baseURL, $ionicListDelegate, $ionicPopup, $ionicLoading, $timeout, $localStorage) {
+  .controller('FavoritesController', ['$scope', 'dishes', 'favorites', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPopup', '$ionicLoading', '$timeout', function ($scope, dishes, favorites, favoriteFactory, baseURL, $ionicListDelegate, $ionicPopup, $ionicLoading, $timeout) {
 
     $scope.baseURL = baseURL;
     $scope.shouldShowDelete = false;
@@ -146,15 +129,6 @@ angular.module('conFusion.controllers', [])
         if (res) {
           console.log('Ok to delete');
           favoriteFactory.deleteFromFavorites(index);
-
-          angular.forEach($scope.favorites, function (val, key) {
-            if (val.id == index) {
-              $scope.favorites.splice(key, 1);
-            }
-          });
-
-          $localStorage.storeObject('favorites', $scope.favorites);
-
         } else {
           console.log('Canceled delete');
         }
